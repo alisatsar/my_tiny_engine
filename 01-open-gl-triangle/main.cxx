@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "engine.hxx"
+#include "event.h"
 
 int main()
 {
@@ -39,14 +40,15 @@ int main()
 	{
 		te::event event;
 
-		while(m->read_input(event))
+        te::event_manager::read_input(event);
+        while(te::event_manager::read_input(event))
 		{
 			switch(event)
 			{
-			case te::event::up_pressed:
+            case te::event::UP:
 				std::cout << "up" << std::endl;
 				break;
-			case te::event::turn_off:
+            case te::event::QUIT:
 				continue_loop = false;
 				break;
 			}

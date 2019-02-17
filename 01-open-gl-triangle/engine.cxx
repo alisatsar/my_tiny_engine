@@ -41,40 +41,7 @@ void get_func_pointer(const char* func_name, T& result)
 	result = reinterpret_cast<T>(gl_pointer);
 }
 
-struct bind
-{
-	SDL_Keycode key;
-	std::string_view name;
-	te::event pressed;
-	te::event released;
-};
 
-const std::array<bind, 8> keys{
-    { { SDLK_w, "W", te::event::up_pressed, te::event::up_released },
-      { SDLK_a, "A", te::event::left_pressed, te::event::left_released },
-      { SDLK_s, "S", te::event::down_pressed, te::event::down_released },
-      { SDLK_d, "D", te::event::right_pressed, te::event::right_released },
-      { SDLK_LCTRL, "button1", te::event::button_a_pressed,
-    		  te::event::button_a_pressed },
-      { SDLK_SPACE, "button2", te::event::button_b_pressed,
-    		  te::event::button_b_pressed },
-      { SDLK_ESCAPE, "select", te::event::select_pressed, te::event::select_released },
-      { SDLK_RETURN, "start", te::event::start_pressed, te::event::start_released } }
-};
-
-bool check_input(const SDL_Event& e, const bind*& result)
-{
-	auto it = std::find_if(std::begin(keys), std::end(keys),[&](const ::bind& b) {
-	        return b.key == e.key.keysym.sym;
-		} );
-
-	if(it != std::end(keys))
-	{
-		result = it;
-		return true;
-	}
-	return true;
-}
 
 class my_tiny_engine : public te::engine
 {
@@ -159,38 +126,6 @@ public:
 		return true;
 	}
 
-	bool read_input(te::event& e)
-	{
-		SDL_Event sdl_event;
-
-		if(SDL_PollEvent(&sdl_event))
-		{
-			const bind* binding = nullptr;
-
-			if(sdl_event.type == SDL_QUIT)
-			{
-				e = te::event::turn_off;
-				return true;
-			}
-			else if(sdl_event.type == SDL_KEYUP)
-			{
-				if(check_input(sdl_event, binding))
-				{
-					e = binding->released;
-					return true;
-				}
-			}
-			else if(sdl_event.type == SDL_KEYDOWN)
-			{
-				if(check_input(sdl_event, binding))
-				{
-					e = binding->pressed;
-					return true;
-				}
-			}
-		}
-		return false;
-	}
 
 	void clear_color() final
 	{
