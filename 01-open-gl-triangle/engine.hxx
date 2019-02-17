@@ -30,7 +30,6 @@ public:
 	virtual bool initialize() = 0;
 	virtual bool create_window(
 			const char* title, int pos_x, int pos_y, int width, int height) = 0;
-	virtual void clear_color() = 0;
 	virtual void unintialize() = 0;
 	virtual void swap_buffers() = 0;
 	virtual void render_triangle(triangle& t) = 0;
@@ -39,4 +38,4 @@ public:
 
 engine* create_engine();
 void destroy_engine(engine* e);
-}
+}//end namespace te

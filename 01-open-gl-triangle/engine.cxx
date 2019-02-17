@@ -9,38 +9,8 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <SDL2/SDL_opengl_glext.h>
-
-PFNGLGENBUFFERSPROC glGenBuffers = nullptr;
-PFNGLBINDBUFFERPROC glBindBuffer = nullptr;
-PFNGLBUFFERDATAPROC glBufferData = nullptr;
-PFNGLCREATESHADERPROC glCreateShader = nullptr;
-PFNGLSHADERSOURCEPROC glShaderSource = nullptr;
-PFNGLCOMPILESHADERPROC glCompileShader = nullptr;
-PFNGLGETSHADERIVPROC glGetShaderiv = nullptr;
-PFNGLGETSHADERINFOLOGPROC glGetShaderInfoLog = nullptr;
-PFNGLCREATEPROGRAMPROC glCreateProgram = nullptr;
-PFNGLATTACHSHADERPROC glAttachShader = nullptr;
-PFNGLGETPROGRAMIVPROC glGetProgramiv = nullptr;
-PFNGLGETPROGRAMINFOLOGPROC glGetProgramInfoLog = nullptr;
-PFNGLUSEPROGRAMPROC glUseProgram = nullptr;
-PFNGLDELETESHADERPROC glDeleteShader = nullptr;
-PFNGLLINKPROGRAMPROC glLinkProgram = nullptr;
-PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = nullptr;
-PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray = nullptr;
-PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation = nullptr;
-
-template<class T>
-void get_func_pointer(const char* func_name, T& result)
-{
-	///to get an OpenGL function by name
-	void* gl_pointer(SDL_GL_GetProcAddress(func_name));
-	if(gl_pointer == nullptr)
-	{
-		throw std::runtime_error("Can't load gl function");
-	}
-	result = reinterpret_cast<T>(gl_pointer);
-}
-
+#include "shader.h"
+#include "gl_initializer.h"
 
 
 class my_tiny_engine : public te::engine
@@ -48,6 +18,7 @@ class my_tiny_engine : public te::engine
 private:
 	SDL_GLContext gl_context;
 	SDL_Window* window = nullptr;
+    te::shader* shader;
 
 public:
 	std::string check_version() final
@@ -123,14 +94,8 @@ public:
 			                      << std::flush;
 			throw std::runtime_error("opengl version too low");
 		}
+        shader = new te::shader();
 		return true;
-	}
-
-
-	void clear_color() final
-	{
-		glClearColor(0.f, 1.0, 0.f, 0.0f);
-		glClear(GL_COLOR_BUFFER_BIT);
 	}
 
 	void swap_buffers() final
@@ -148,34 +113,7 @@ public:
 
 	void create_my_shader() final
 	{
-		try
-		{
-			get_func_pointer("glGenBuffers", glGenBuffers);
-			get_func_pointer("glBindBuffer", glBindBuffer);
-			get_func_pointer("glBufferData", glBufferData);
-			get_func_pointer("glCreateShader", glCreateShader);
-			get_func_pointer("glShaderSource", glShaderSource);
-			get_func_pointer("glCompileShader", glCompileShader);
-			get_func_pointer("glGetShaderiv", glGetShaderiv);
-			get_func_pointer("glGetShaderInfoLog", glGetShaderInfoLog);
-			get_func_pointer("glCreateProgram", glCreateProgram);
-			get_func_pointer("glAttachShader", glAttachShader);
-			get_func_pointer("glGetProgramiv", glGetProgramiv);
-			get_func_pointer("glGetProgramInfoLog", glGetProgramInfoLog);
-			get_func_pointer("glLinkProgram", glLinkProgram);
-			get_func_pointer("glUseProgram", glUseProgram);
-			get_func_pointer("glDeleteShader", glDeleteShader);
-			get_func_pointer("glVertexAttribPointer", glVertexAttribPointer);
-			get_func_pointer("glBindAttribLocation", glBindAttribLocation);
-			get_func_pointer("glEnableVertexAttribArray", glEnableVertexAttribArray);
-		}
-		catch(std::exception& ex)
-		{
-			ex.what();
-		}
-
-		GLuint vert_shader = glCreateShader(GL_VERTEX_SHADER);
-		const GLchar* vertex_shader_src = R"(
+        const char* vertex_shader_src = R"(
                                           #version 300 es
                                           layout(location = 0)in vec4 vPosition;
                                           void main()
@@ -183,21 +121,8 @@ public:
                                                   gl_Position = vPosition;
                                           })";
 
-		glShaderSource(vert_shader, 1, &vertex_shader_src, NULL);
-		glCompileShader(vert_shader);
 
-		GLint  success;
-		char infoLog[512];
-		glGetShaderiv(vert_shader, GL_COMPILE_STATUS, &success);
-		if(!success)
-		{
-			glGetShaderInfoLog(vert_shader, 512, NULL, infoLog);
-		    std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
-		}
-
-
-		GLuint fragment_shader = glCreateShader(GL_FRAGMENT_SHADER);
-		const GLchar* fragment_shader_src = R"(
+        const char* fragment_shader_src = R"(
                                             #version 300 es
                                             precision mediump float;
                                             out vec4 fragColor;
@@ -205,48 +130,14 @@ public:
                                             {
                                                 fragColor = vec4 (1.0, 0.0, 0.0, 1.0);
                                             })";
-		glShaderSource(fragment_shader, 1, &fragment_shader_src, NULL);
-		glCompileShader(fragment_shader);
 
-		glGetShaderiv(fragment_shader, GL_COMPILE_STATUS, &success);
-		if(!success)
-		{
-			glGetShaderInfoLog(fragment_shader, 512, NULL, infoLog);
-			std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-		}
-
-		GLuint shader_program = glCreateProgram();
-		if (0 == shader_program)
-		{
-		    std::cout << "failed to create gl program";
-		    glDeleteShader(vert_shader);
-		    glDeleteShader(fragment_shader);
-        }
-
-		glAttachShader(shader_program, vert_shader);
-		glAttachShader(shader_program, fragment_shader);
-		glBindAttribLocation(shader_program, 0, "a_position");
-		glLinkProgram(shader_program);
-		GLint program_linked;
-		glGetProgramiv(shader_program, GL_LINK_STATUS, &program_linked);
-		if (program_linked != GL_TRUE)
-		{
-		    GLsizei log_length = 0;
-		    GLchar message[1024];
-		    glGetProgramInfoLog(shader_program, 1024, &log_length, message);
-		    std::cout << "ERROR::LINKED IS_FAILED\n" << message << std::endl;
-		}
-
-		glUseProgram(shader_program);
-
-		glDeleteShader(vert_shader);
-	    glDeleteShader(fragment_shader);
+        shader->create_program(vertex_shader_src, fragment_shader_src);
 	}
 
 	void render_triangle(te::triangle& t) final
 	{
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(te::vertex), &t.v[0]);
-		glEnableVertexAttribArray(0);
+        te::gl::glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(te::vertex), &t.v[0]);
+        te::gl::glEnableVertexAttribArray(0);
 		glDrawArrays(GL_TRIANGLES, 0, 3);
 	}
 };

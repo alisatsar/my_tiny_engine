@@ -24,7 +24,7 @@ int main()
 
 	te::triangle t1;
 
-	t1.v[0].x = -0.5;
+    t1.v[0].x = -0.0;
 	t1.v[0].y = -0.5;
 	t1.v[1].x = 0.5;
 	t1.v[1].y = -0.5;
@@ -40,7 +40,6 @@ int main()
 	{
 		te::event event;
 
-        te::event_manager::read_input(event);
         while(te::event_manager::read_input(event))
 		{
 			switch(event)
@@ -54,7 +53,6 @@ int main()
 			}
 		}
 		m->render_triangle(t1);
-		//m->clear_color();
 		m->swap_buffers();
 	};
 

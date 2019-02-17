@@ -7,6 +7,9 @@ target_compile_features(engine PUBLIC cxx_std_17)
 add_library(event SHARED event.cpp)
 target_compile_features(event PUBLIC cxx_std_17)
 
+add_library(shader SHARED shader.cpp)
+target_compile_features(shader PUBLIC cxx_std_17)
+
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
@@ -19,8 +22,12 @@ target_link_libraries(engine
     ${OPENGL_gl_LIBRARY}
     )
 
+target_link_libraries(shader
+    ${OPENGL_gl_LIBRARY}
+    )
+
 target_link_libraries(event
     ${SDL2_LIBRARIES}
     )
 
-target_link_libraries(game-03-3 engine event)
+target_link_libraries(game-03-3 engine event shader)
