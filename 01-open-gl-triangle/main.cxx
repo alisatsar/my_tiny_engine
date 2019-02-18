@@ -2,7 +2,7 @@
 #include <iostream>
 #include <memory>
 
-#include "engine.hxx"
+#include "engine.h"
 #include "event.h"
 
 int main()

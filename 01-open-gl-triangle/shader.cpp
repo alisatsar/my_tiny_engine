@@ -1,6 +1,7 @@
 #include "shader.h"
 
 #include <iostream>
+#include <fstream>
 
 #include "gl_initializer.h"
 
@@ -15,6 +16,10 @@ te::shader::shader()
 
 GLuint te::shader::create_shader(GLenum shaderType, const GLchar* shader_src)
 {
+    if(te::gl::glCreateShader == nullptr)
+    {
+        std::cout << "nullptr" ;
+    }
     GLuint shader = te::gl::glCreateShader(shaderType);
 
     te::gl::glShaderSource(shader, 1, &shader_src, NULL);
@@ -63,4 +68,42 @@ GLuint te::shader::create_program(const char* vertex_src, const char* fragment_s
 
     te::gl::glDeleteShader(vertex_shader);
     te::gl::glDeleteShader(fragment_shader);
+}
+
+GLuint te::shader::create_shader(const std::string& vertex_file_path,
+                                 const std::string& fragment_file_path)
+{
+    std::ifstream vertex_file(vertex_file_path);
+    if(vertex_file.fail())
+    {
+        perror(vertex_file_path.c_str());
+    }
+
+    std::string vertex_content = "";
+    std::string line;
+
+    while(std::getline(vertex_file, line))
+    {
+        vertex_content += line + "\n";
+    }
+
+    vertex_file.close();
+
+    std::ifstream fragment_file(fragment_file_path);
+    if(fragment_file.fail())
+    {
+        perror(fragment_file_path.c_str());
+    }
+
+    std::string fragment_content = "";
+    line.clear();
+
+    while(std::getline(fragment_file, line))
+    {
+        fragment_content += line + "\n";
+    }
+
+    vertex_file.close();
+
+    return create_shader(vertex_content, fragment_content);
 }

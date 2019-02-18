@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.9)
 project(04-1-opengl-triangle)
 
-add_library(engine SHARED engine.cxx)
+add_library(engine SHARED engine_impl.cpp)
 target_compile_features(engine PUBLIC cxx_std_17)
 
 add_library(event SHARED event.cpp)
