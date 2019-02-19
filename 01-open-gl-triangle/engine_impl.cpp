@@ -106,33 +106,36 @@ void te::my_tiny_engine::unintialize()
 
 void te::my_tiny_engine::create_my_shader()
 {
-//    const char* vertex_shader_src = R"(
-//                                          #version 300 es
-//                                          layout(location = 0)in vec4 vPosition;
-//                                          void main()
-//                                          {
-//                                                  gl_Position = vPosition;
-//                                                  })";
+    /*const char* vertex_shader_src = R"(
+                                          #version 300 es
+                                          layout(location = 0)in vec4 vPosition;
+                                          void main()
+                                          {
+                                                  gl_Position = vPosition;
+                                                  })";
 
 
-//    const char* fragment_shader_src = R"(
-//                                            #version 300 es
-//                                            precision mediump float;
-//                                            out vec4 fragColor;
-//                                            void main()
-//                                            {
-//                                                fragColor = vec4 (1.0, 0.0, 0.0, 1.0);
-//                                            })";
+    const char* fragment_shader_src = R"(
+                                            #version 300 es
+                                            precision mediump float;
+                                            out vec4 fragColor;
+                                            void main()
+                                            {
+                                                fragColor = vec4 (1.0, 0.0, 0.0, 1.0);
+                                            })";
 
-    //shader->create_program(vertex_shader_src, fragment_shader_src);
+    shader->create_program(vertex_shader_src, fragment_shader_src);*/
 
-    shader->create_program("/home/alisatsar/untitled/shaders/color_shader.vert",
+    shader->create_program_string("/home/alisatsar/untitled/shaders/color_shader.vert",
                             "/home/alisatsar/untitled/shaders/color_srader.frag");
+    shader->add_attribute("a_position");
+    shader->link_shaders();
+    shader->use_program();
 }
 
 void te::my_tiny_engine::render_triangle(te::triangle& t)
 {
-    te::gl::glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(te::vertex), &t.v[0]);
+    te::gl::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(te::vertex), &t.v[0]);
     te::gl::glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }

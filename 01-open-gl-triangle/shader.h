@@ -11,8 +11,10 @@ class shader
 public:
     shader();
     GLuint create_program(const char* vertex_src, const char* fragment_src);
-    GLuint create_shader(const std::string& vertex_file_path, const std::string& fragment_file_path);
-
+    GLuint create_program_string(const std::string& vertex_file_path, const std::string& fragment_file_path);
+    void add_attribute(const std::string& attribute_name);
+    void link_shaders();
+    void use_program();
 private:
     GLuint create_shader(GLenum shaderType, const GLchar* shader_src);
 
@@ -20,6 +22,8 @@ private:
     GLuint vertex_shader;
     GLuint fragment_shader;
     GLuint shader_program;
+
+    int32_t num_attributes;
 };
 
 }//end namespace te
