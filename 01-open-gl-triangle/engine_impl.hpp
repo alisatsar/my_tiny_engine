@@ -22,10 +22,20 @@ public:
     void unintialize() final;
     void create_my_shader() final;
     void render_triangle(te::triangle& t) final;
+
+    //from learnopengl
+    void render_vertices(float vertices[]) final;
+    
+    void render_with_buffer(float vertices[]) final;
+
+    void render_ebo(float vertices[], unsigned int indeces[]) final;
 private:
     SDL_GLContext gl_context;
     SDL_Window* window = nullptr;
     te::shader* shader;
+    GLuint VBO;
+    GLuint EBO;
+    GLuint VAO;
 };
 
 

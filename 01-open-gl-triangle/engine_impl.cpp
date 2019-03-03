@@ -106,7 +106,7 @@ void te::my_tiny_engine::unintialize()
 
 void te::my_tiny_engine::create_my_shader()
 {
-    /*const char* vertex_shader_src = R"(
+    const char* vertex_shader_src = R"(
                                           #version 300 es
                                           layout(location = 0)in vec4 vPosition;
                                           void main()
@@ -124,10 +124,10 @@ void te::my_tiny_engine::create_my_shader()
                                                 fragColor = vec4 (1.0, 0.0, 0.0, 1.0);
                                             })";
 
-    shader->create_program(vertex_shader_src, fragment_shader_src);*/
+    shader->create_program(vertex_shader_src, fragment_shader_src);
 
-    shader->create_program_string("/home/alisatsar/untitled/shaders/color_shader.vert",
-                            "/home/alisatsar/untitled/shaders/color_srader.frag");
+    /*shader->create_program_string("/home/alisatsar/untitled/shaders/color_shader.vert",
+                            "/home/alisatsar/untitled/shaders/color_srader.frag");*/
     shader->add_attribute("a_position");
     shader->link_shaders();
     shader->use_program();
@@ -140,6 +140,12 @@ void te::my_tiny_engine::render_triangle(te::triangle& t)
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
+void te::my_tiny_engine::render_vertices(float vertices[])
+{
+    te::gl::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices), &vertices[0]);
+    te::gl::glEnableVertexAttribArray(0);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
 
 te::engine* te::create_engine()
 {
@@ -152,3 +158,38 @@ void te::destroy_engine(te::engine* e)
 }
 
 te::engine::~engine(){}
+
+void te::my_tiny_engine::render_with_buffer(float vertices[])
+{
+    te::gl::glGenBuffers(1, &VBO);
+    te::gl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
+    te::gl::glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    te::gl::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vertices), &vertices[0]);
+    te::gl::glEnableVertexAttribArray(0);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void te::my_tiny_engine::render_ebo(float vertices[], unsigned int indeces[])
+{
+    te::gl::glGenVertexArrays(1, &VAO);
+    te::gl::glGenBuffers(1, &VBO);
+    te::gl::glGenBuffers(1, &EBO);
+    te::gl::glBindVertexArray(VAO);
+    te::gl::glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    te::gl::glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    te::gl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+    te::gl::glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indeces),
+                         indeces, GL_STATIC_DRAW);
+
+    te::gl::glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE,
+                                  sizeof(vertices), &vertices[0]);
+    te::gl::glEnableVertexAttribArray(0);
+    te::gl::glBindBuffer(GL_ARRAY_BUFFER, 0);
+    te::gl::glBindVertexArray(0);
+
+    te::gl::glBindVertexArray(VAO); // seeing as we only have a single VAO there's no need to bind it every time, but we'll do so to keep things a bit more organized
+          //glDrawArrays(GL_TRIANGLES, 0, 6);
+     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+

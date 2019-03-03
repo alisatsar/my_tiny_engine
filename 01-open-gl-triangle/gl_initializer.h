@@ -31,6 +31,9 @@ PFNGLVERTEXATTRIBPOINTERPROC glVertexAttribPointer = nullptr;
 PFNGLENABLEVERTEXATTRIBARRAYPROC glEnableVertexAttribArray = nullptr;
 PFNGLBINDATTRIBLOCATIONPROC glBindAttribLocation = nullptr;
 
+PFNGLGENVERTEXARRAYSPROC glGenVertexArrays = nullptr;
+PFNGLBINDVERTEXARRAYPROC glBindVertexArray = nullptr;
+
 template<class T>
 void get_func_pointer(const char* func_name, T& result)
 {
@@ -64,6 +67,8 @@ void initializer_gl_functions()
         get_func_pointer("glVertexAttribPointer", glVertexAttribPointer);
         get_func_pointer("glBindAttribLocation", glBindAttribLocation);
         get_func_pointer("glEnableVertexAttribArray", glEnableVertexAttribArray);
+        get_func_pointer("glGenVertexArrays", glGenVertexArrays);
+        get_func_pointer("glBindVertexArray", glBindVertexArray);
     }
     catch(std::exception& ex)
     {
