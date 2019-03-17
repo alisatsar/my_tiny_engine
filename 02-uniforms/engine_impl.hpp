@@ -31,7 +31,7 @@ public:
 
 private:
     SDL_GLContext gl_context;
-    SDL_Window* window = nullptr;
+    SDL_Window* window;
     te::shader* shader;
     GLuint VBO;
     GLuint EBO;

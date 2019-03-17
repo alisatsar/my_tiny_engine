@@ -50,9 +50,6 @@ int main()
         1, 2, 3
     };
 
-	std::cout << sizeof(t1);
-	std::cout << sizeof(te::triangle);
-
 	bool continue_loop = true;
 
 	while(continue_loop)
@@ -73,8 +70,8 @@ int main()
 		}
         //m->render_triangle(t1);
         //m->render_vertices(vertices);
-        m->render_with_buffer(vertices);
-        //m->render_ebo(vertices2, indices);
+        //m->render_with_buffer(vertices);
+        m->render_ebo(vertices2, indices);
 		m->swap_buffers();
 	};
 

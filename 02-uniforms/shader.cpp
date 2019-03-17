@@ -91,8 +91,7 @@ GLuint te::shader::create_program(const char* vertex_src, const char* fragment_s
 
 void te::shader::add_attribute(const std::string& attribute_name)
 {
-    te::gl::glBindAttribLocation(shader_program, num_attributes++,
-                                 attribute_name.c_str());
+    te::gl::glBindAttribLocation(shader_program, 0, attribute_name.c_str());
 }
 
 void te::shader::link_shaders()
