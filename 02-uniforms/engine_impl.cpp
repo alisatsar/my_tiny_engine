@@ -5,6 +5,7 @@
 #include <cassert>
 #include <iostream>
 #include <string_view>
+#include <cmath>
 
 
 #include "shader.h"
@@ -106,7 +107,7 @@ void te::my_tiny_engine::unintialize()
 
 void te::my_tiny_engine::create_my_shader()
 {
-    const char* vertex_shader_src = R"(
+    /*const char* vertex_shader_src = R"(
                                           #version 300 es
                                           layout(location = 0)in vec4 vPosition;
                                           void main()
@@ -122,12 +123,12 @@ void te::my_tiny_engine::create_my_shader()
                                             void main()
                                             {
                                                 fragColor = vec4 (1.0, 0.0, 0.0, 1.0);
-                                            })";
+                                            })";*/
 
-    shader->create_program(vertex_shader_src, fragment_shader_src);
+    //shader->create_program(vertex_shader_src, fragment_shader_src);
 
-    /*shader->create_program_string("/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_shader.vert",
-                            "/home/alisatsar/untitled/shaders/color_srader.frag");*/
+    shader->create_program_string("/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_shader.vert",
+                            "/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_srader_uniform.frag");
     shader->add_attribute("a_position");
 
     shader->link_shaders();
@@ -168,4 +169,19 @@ void te::my_tiny_engine::render_with_buffer(float vertices[])
     te::gl::glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertices), &vertices[0]);
     te::gl::glEnableVertexAttribArray(0);
     glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+float te::my_tiny_engine::get_time()
+{
+    std::uint32_t ms_from_library_initialization = SDL_GetTicks();
+    return ms_from_library_initialization * 0.001f;
+}
+
+void te::my_tiny_engine::render_dinamic_color()
+{
+    float time_value = get_time();
+    float green_value = (sin(time_value) /2.0f) + 0.5f;
+    int vertexColorLocation = shader->get_uniform_location("ourColor");
+    shader->use_program();
+    te::gl::glUniform4f(vertexColorLocation, 0.0f, green_value, 0.0f, 1.0f);
 }

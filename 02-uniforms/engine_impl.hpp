@@ -22,6 +22,10 @@ public:
     void unintialize() final;
     void create_my_shader() final;
     void render_triangle(te::triangle& t) final;
+    float get_time() final;
+
+    void render_dinamic_color() final;
+
 
     //from learnopengl
     void render_vertices(float vertices[]) final;   

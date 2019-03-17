@@ -178,3 +178,9 @@ void te::shader::set_uniform_buffer(GLfloat data[], const char* name)
     te::gl::glBindBufferBase(GL_UNIFORM_BUFFER, bindign_point, buffer_id);
 }
 
+int te::shader::get_uniform_location(const char* name)
+{
+    te::gl::glGetUniformLocation(shader_program, name);
+}
+
+

@@ -68,11 +68,12 @@ int main()
 				break;
 			}
 		}
-        //m->render_triangle(t1);
+        m->render_dinamic_color();
+        m->render_triangle(t1);
         //m->render_vertices(vertices);
         //m->render_with_buffer(vertices);
-        m->render_ebo(vertices2, indices);
 		m->swap_buffers();
+        std::cout << m->get_time() << std::endl;
 	};
 
 	m->unintialize();

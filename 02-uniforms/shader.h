@@ -20,6 +20,9 @@ public:
     void get_info_about_active_uniform();
     void set_uniform_buffer(GLfloat data[], const char* name);
 
+    //from learnopengl
+    int get_uniform_location(const char* name);
+
 private:
     GLuint create_shader(GLenum shaderType, const GLchar* shader_src);
 

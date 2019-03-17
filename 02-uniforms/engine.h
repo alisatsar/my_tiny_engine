@@ -35,6 +35,9 @@ public:
         virtual void swap_buffers() = 0;
         virtual void render_triangle(triangle& t) = 0;
         virtual void create_my_shader() = 0;
+        virtual float get_time() = 0;
+
+        virtual void render_dinamic_color() = 0;
 
         virtual void render_vertices(float vertices[]) = 0;
         virtual void render_with_buffer(float vertices[]) = 0;
