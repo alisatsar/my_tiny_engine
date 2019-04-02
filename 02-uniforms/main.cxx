@@ -50,6 +50,14 @@ int main()
         1, 2, 3
     };
 
+    float vertices_color[] = {
+         // positions         // colors
+        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,  // bottom right
+          -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,  // bottom left
+           0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f   // top
+
+     };
+
 	bool continue_loop = true;
 
 	while(continue_loop)
@@ -68,12 +76,13 @@ int main()
 				break;
 			}
 		}
-        m->render_dinamic_color();
-        m->render_triangle(t1);
+        //m->render_dinamic_color();
+        //m->render_triangle(t1);
+        m->render_vertex_color(vertices_color);
         //m->render_vertices(vertices);
         //m->render_with_buffer(vertices);
 		m->swap_buffers();
-        std::cout << m->get_time() << std::endl;
+        //std::cout << m->get_time() << std::endl;
 	};
 
 	m->unintialize();

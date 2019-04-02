@@ -26,6 +26,7 @@ std::string te::my_tiny_engine::check_version()
     bool result = SDL_VERSIONNUM(compiled.major, compiled.minor, compiled.patch) ==
 				SDL_VERSIONNUM(linked.major, linked.minor, linked.patch);
 
+
     if(!result)
     {
         s = "WARNING: The compiled version is not equal linked version!";
@@ -72,6 +73,10 @@ bool te::my_tiny_engine::create_window(const char* title, int32_t pos_x, int32_t
         std::cout << "GLContext error";
     }
     assert(gl_context != nullptr);
+
+    SDL_GL_SetAttribute (SDL_GL_CONTEXT_MAJOR_VERSION, 3); //OpenGL 3+
+    SDL_GL_SetAttribute (SDL_GL_CONTEXT_MINOR_VERSION, 1); //OpenGL 3.3
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
     int gl_major_ver = 0;
     int result = SDL_GL_GetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, &gl_major_ver);
@@ -127,8 +132,8 @@ void te::my_tiny_engine::create_my_shader()
 
     //shader->create_program(vertex_shader_src, fragment_shader_src);
 
-    shader->create_program_string("/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_shader.vert",
-                            "/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_srader_uniform.frag");
+    shader->create_program_string("/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_vertex.vert",
+                            "/home/alisatsar/my_tiny_engine/my_tiny_engine/02-uniforms/shaders/color_vertex.frag");
     shader->add_attribute("a_position");
 
     shader->link_shaders();
@@ -185,3 +190,82 @@ void te::my_tiny_engine::render_dinamic_color()
     shader->use_program();
     te::gl::glUniform4f(vertexColorLocation, 0.0f, green_value, 0.0f, 1.0f);
 }
+
+void te::my_tiny_engine::render_vertex_color(float vertices_color[])
+{
+    using namespace te::gl;
+
+    glVertexAttribPointer(0,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          6 * sizeof(float),
+                          vertices_color);
+
+    glVertexAttribPointer(1,
+                          3,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          6 * sizeof(float),
+                          (vertices_color + 3));
+
+    te::gl::glEnableVertexAttribArray(0);
+    te::gl::glEnableVertexAttribArray(1);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+
+void te::my_tiny_engine::render_r_c()
+{
+    using namespace te::gl;
+#define VERTEX_POS_SIZE 3   //x, y, z
+#define VERTEX_COLOR_SIZE 3    //x, y, z
+
+#define VERTEX_POS_INDEX 0
+#define VERTEX_COLOR_INDEX 1
+
+#define VERTEX_POS_OFFSET 0
+#define VERTEX_COLOR_OFFSET 3
+
+#define VERTEX_ATTRIB_SIZE (VERTEX_POS_SIZE +\
+                             VERTEX_COLOR_OFFSET)
+    float *p = (float*)malloc(3 * VERTEX_ATTRIB_SIZE * sizeof(float));
+    p[0] = 0.5f;
+    p[1] = -0.5f;
+    p[2] = 0.5f;
+    p[3] = 0.0f;
+    p[4] = 1.0f;
+    p[5] = 0.0f;
+
+    p[6] = -0.5f;
+    p[7] = -0.5f;
+    p[8] = 0.0f;
+    p[9] = 1.0f;
+    p[10] = 0.0f;
+    p[11] = 0.0f;
+
+    p[12] = 0.0f;
+    p[13] = 0.5f;
+    p[14] = 0.0f;
+    p[15] = 0.0f;
+    p[16] = 0.0f;
+    p[17] = 1.0f;
+
+    glVertexAttribPointer(VERTEX_POS_INDEX,
+                          VERTEX_POS_SIZE,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          VERTEX_ATTRIB_SIZE * sizeof(float),
+                          p);
+
+    glVertexAttribPointer(VERTEX_COLOR_INDEX,
+                          VERTEX_COLOR_SIZE,
+                          GL_FLOAT,
+                          GL_FALSE,
+                          VERTEX_ATTRIB_SIZE * sizeof(float),
+                          (p + VERTEX_COLOR_OFFSET));
+
+    te::gl::glEnableVertexAttribArray(VERTEX_POS_INDEX);
+    te::gl::glEnableVertexAttribArray(VERTEX_COLOR_INDEX);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+}
+

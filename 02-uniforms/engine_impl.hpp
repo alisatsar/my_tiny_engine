@@ -30,6 +30,8 @@ public:
     //from learnopengl
     void render_vertices(float vertices[]) final;   
     void render_with_buffer(float vertices[]) final;
+    void render_vertex_color(float vertices_color[]) final;
+    void render_r_c() final;
 
     //from book
 

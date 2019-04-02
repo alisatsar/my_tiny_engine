@@ -41,6 +41,10 @@ public:
 
         virtual void render_vertices(float vertices[]) = 0;
         virtual void render_with_buffer(float vertices[]) = 0;
+        virtual void render_vertex_color(float vertices_color[]) = 0;
+
+        virtual void render_r_c() = 0;
+
 };
 
     engine* create_engine();
