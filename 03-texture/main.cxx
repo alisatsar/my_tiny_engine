@@ -5,6 +5,7 @@
 #include "engine.h"
 #include "event.h"
 #include "shader_path_constants.hpp"
+#include "common/types.h"
 
 int main()
 {
@@ -25,7 +26,9 @@ int main()
     m->create_my_shader(spc::triangle_2D_vert, spc::triangle_2D_frag);
     m->create_texture("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/container.jpg");
 
-    te::triangle t1(0.0f, 0.4f, 0.6f, -0.4f, -0.4f, -0.4f);
+    te::triangle t1(0.0f, 0.4f,
+                    0.6f, -0.4f,
+                    -0.4f, -0.4f);
     bool continue_loop = true;
 	while(continue_loop)
 	{

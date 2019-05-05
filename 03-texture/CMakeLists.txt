@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.9)
 project(03-texture)
 
+include_directories("S{PROJECT_SOURCE_DIR}/common")
+add_subdirectory (common)
+set (COMMON_LIB ${COMMON_LIB} common)
+
 add_library(engine SHARED engine_impl.cpp)
 target_compile_features(engine PUBLIC cxx_std_17)
 
@@ -33,4 +37,4 @@ target_link_libraries(event
     ${SDL2_LIBRARIES}
     )
 
-target_link_libraries(game-03-3 engine event shader texture)
+target_link_libraries(game-03-3 engine event shader texture color)

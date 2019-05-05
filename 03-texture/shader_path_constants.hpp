@@ -1,7 +1,7 @@
 #pragma once
 #include <string>
 
-namespace spc//shader_path_constans
+namespace spc///shader_path_constans
 {
     const std::string shader_directory("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/shaders/");
     //render simple 2D triangle (red color default)
