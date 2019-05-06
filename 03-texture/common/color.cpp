@@ -15,10 +15,10 @@ color::color(float a_r, float a_g, float a_b, float a_a)
     assert(a_b <= 1 && a_b >= 0);
     assert(a_a <= 1 && a_a >= 0);
 
-    std::uint32_t r = static_cast<std::uint32_t>(r * 255);
-    std::uint32_t g = static_cast<std::uint32_t>(g * 255);
-    std::uint32_t b = static_cast<std::uint32_t>(b * 255);
-    std::uint32_t a = static_cast<std::uint32_t>(a * 255);
+    std::uint32_t r = static_cast<std::uint32_t>(a_r * 255);
+    std::uint32_t g = static_cast<std::uint32_t>(a_g * 255);
+    std::uint32_t b = static_cast<std::uint32_t>(a_b * 255);
+    std::uint32_t a = static_cast<std::uint32_t>(a_a * 255);
 
     rgba = a << 24 | b << 16 | g << 8 | r;
 }

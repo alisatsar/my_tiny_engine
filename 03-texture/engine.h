@@ -5,6 +5,7 @@
 #include <string>
 
 #include "common/types.h"
+#include "common/color.h"
 
 namespace te {
 
@@ -17,6 +18,7 @@ public:
         virtual bool create_window(const char* title, int32_t pos_x, int32_t pos_y, int32_t width, int32_t height) = 0;
         virtual void unintialize() = 0;
         virtual void swap_buffers() = 0;
+        //triangle_2d
         virtual void render_triangle(triangle& t) = 0;
         virtual void create_my_shader(const std::string& vertex_file_path,
                                       const std::string& fragment_file_path) = 0;
@@ -32,6 +34,9 @@ public:
 
         virtual void create_texture(const char* file_path) = 0;
         virtual void render_texture() = 0;
+        //color_vertex
+        virtual void render_color_triangle(const triangle &t, const te::color &color) = 0;
+
 
 
 };

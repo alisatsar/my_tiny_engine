@@ -23,12 +23,13 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-    m->create_my_shader(spc::triangle_2D_vert, spc::triangle_2D_frag);
-    m->create_texture("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/container.jpg");
+    m->create_my_shader(spc::triangle_3D_color_vert, spc::triangle_3D_color_frag);
+    //m->create_texture("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/container.jpg");
 
     te::triangle t1(0.0f, 0.4f,
                     0.6f, -0.4f,
-                    -0.4f, -0.4f);
+                    -0.4f, -0.2f);
+    te::color color(0.f, 1.0f, 0.f, 1.0f);
     bool continue_loop = true;
 	while(continue_loop)
 	{
@@ -46,8 +47,7 @@ int main()
 				break;
 			}
 		}
-        m->render_triangle(t1);
-        m->render_dinamic_color();
+        m->render_color_triangle(t1, color);
 		m->swap_buffers();
 	};
 

@@ -40,7 +40,8 @@ public:
     void create_texture(const char* file_path) final;
     void render_texture();
 
-    //from book
+
+    void render_color_triangle(const triangle &t, const te::color &color) final;
 
 private:
     SDL_GLContext gl_context;

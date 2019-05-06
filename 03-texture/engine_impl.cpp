@@ -12,6 +12,8 @@
 #include "gl_initializer.h"
 #include "texture.h"
 
+#include "common/types_constants.h"
+
 te::my_tiny_engine::my_tiny_engine()
 {}
 
@@ -100,7 +102,7 @@ bool te::my_tiny_engine::create_window(const char* title, int32_t pos_x, int32_t
 void te::my_tiny_engine::swap_buffers()
 {
     SDL_GL_SwapWindow(window);
-    glClearColor(0.f, 1.0, 1.f, 0.0f);
+    glClearColor(0.f, 1.0, 1.f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -258,6 +260,8 @@ void te::my_tiny_engine::render_r_c()
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
+
+
 void te::my_tiny_engine::create_texture(const char* file_path)
 {
     using namespace te::gl;
@@ -315,5 +319,19 @@ void te::my_tiny_engine::render_texture()
 {
     glBindTexture(GL_TEXTURE_2D, texture_id);
 }
+
+void te::my_tiny_engine::render_color_triangle(const te::triangle& t,
+                                                 const te::color& color)
+{
+    GLfloat c[4] = {color.get_r(), color.get_g(), color.get_b(), color.get_a()};
+    te::gl::glVertexAttrib4fv(0, c);
+    te::gl::glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0,
+                                  &t.v[0]);
+    te::gl::glEnableVertexAttribArray(1);
+    glDrawArrays(GL_TRIANGLES, 0, 3);
+    te::gl::glDisableVertexAttribArray(1);
+
+}
+
 
 

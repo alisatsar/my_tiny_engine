@@ -44,6 +44,9 @@ PFNGLUNIFORM4FPROC glUniform4f = nullptr;
 PFNGLGENTEXTURESEXTPROC glGenTextures = nullptr;
 PFNGLBINDTEXTUREEXTPROC glBindTexture = nullptr;
 
+PFNGLVERTEXATTRIB4FVPROC glVertexAttrib4fv = nullptr;
+PFNGLDISABLEVERTEXATTRIBARRAYPROC glDisableVertexAttribArray = nullptr;
+
 template<class T>
 void get_func_pointer(const char* func_name, T& result)
 {
@@ -88,6 +91,8 @@ void initializer_gl_functions()
         get_func_pointer("glUniform4f", glUniform4f);
         get_func_pointer("glGenTextures", glGenTextures);
         get_func_pointer("glBindTexture", glBindTexture);
+        get_func_pointer("glVertexAttrib4fv", glVertexAttrib4fv);
+        get_func_pointer("glDisableVertexAttribArray", glDisableVertexAttribArray);
     }
     catch(std::exception& ex)
     {

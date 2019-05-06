@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 namespace te {
 
 struct vertex
@@ -29,6 +31,8 @@ struct triangle
             v[2].x = x2;
             v[2].y = y2;
         }
+
+        std::size_t get_vertex_count() const { return sizeof(v); }
 };
 
 }//end namespace te
