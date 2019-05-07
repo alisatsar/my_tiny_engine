@@ -6,6 +6,7 @@
 
 #include "common/types.h"
 #include "common/color.h"
+#include "gl_initializer.h"
 
 namespace te {
 
@@ -27,7 +28,6 @@ public:
         virtual void render_dinamic_color() = 0;
 
         virtual void render_vertices(float vertices[]) = 0;
-        virtual void render_with_buffer(float vertices[]) = 0;
         virtual void render_vertex_color(float vertices_color[]) = 0;
 
         virtual void render_r_c() = 0;
@@ -36,8 +36,13 @@ public:
         virtual void render_texture() = 0;
         //color_vertex
         virtual void render_color_triangle(const triangle &t, const te::color &color) = 0;
+        virtual void render_with_vbo(const te::triangle& t1, const te::color& color) = 0;
+
+        virtual GLuint create_vao(const te::triangle& t1,
+                                const te::color& color) = 0;
 
 
+        virtual void render_with_vao(GLuint a_vao) = 0;
 
 };
 

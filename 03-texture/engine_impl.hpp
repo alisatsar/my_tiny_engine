@@ -1,6 +1,7 @@
 #pragma once
 #include "engine.h"
 #include <string>
+#include <memory>
 
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
@@ -8,6 +9,7 @@
 
 #include "shader.h"
 #include "texture.h"
+#include "vao.h"
 
 //this means tiny_engine
 namespace te
@@ -33,7 +35,6 @@ public:
 
     //from learnopengl
     void render_vertices(float vertices[]) final;   
-    void render_with_buffer(float vertices[]) final;
     void render_vertex_color(float vertices_color[]) final;
     void render_r_c() final;
     //texture
@@ -42,15 +43,19 @@ public:
 
 
     void render_color_triangle(const triangle &t, const te::color &color) final;
+    void render_with_vbo(const te::triangle& t1,
+                             const te::color& color) final;
 
+    void render_with_vao(GLuint a_vao) final;
+
+    GLuint create_vao(const te::triangle& t1,
+                            const te::color& color) final;
 private:
     SDL_GLContext gl_context;
     SDL_Window* window;
     te::shader* shader;
-    GLuint VBO;
-    GLuint EBO;
-    GLuint VAO;
     unsigned int texture_id;
+    std::unique_ptr<te::vao> my_vao;
 };
 
 

@@ -13,4 +13,9 @@ namespace spc
     //void render_color_triangle(const triangle &t, const te::color &color)
     const std::string triangle_3D_color_vert(shader_directory + "color_vertex.vert");
     const std::string triangle_3D_color_frag(shader_directory + "color_vertex.frag");
+
+    //render 2D trianle custom attribut with vbo
+    //void render_with_vbo(const triangle &t, const te::color &color)
+    const std::string triangle_3D_vbo_vert(shader_directory + "color_vertex_vbo.vert");
+    const std::string triangle_3D_vbo_frag(shader_directory + "color_vertex_vbo.frag");
 }

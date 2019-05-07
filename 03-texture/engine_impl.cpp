@@ -7,7 +7,6 @@
 #include <string_view>
 #include <cmath>
 
-
 #include "shader.h"
 #include "gl_initializer.h"
 #include "texture.h"
@@ -102,7 +101,7 @@ bool te::my_tiny_engine::create_window(const char* title, int32_t pos_x, int32_t
 void te::my_tiny_engine::swap_buffers()
 {
     SDL_GL_SwapWindow(window);
-    glClearColor(0.f, 1.0, 1.f, 1.0f);
+    glClearColor(0.f, 1.0, 0.f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -156,16 +155,6 @@ void te::destroy_engine(te::engine* e)
 }
 
 te::engine::~engine(){}
-
-void te::my_tiny_engine::render_with_buffer(float vertices[])
-{
-    te::gl::glGenBuffers(1, &VBO);
-    te::gl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VBO);
-    te::gl::glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-    te::gl::glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(vertices), &vertices[0]);
-    te::gl::glEnableVertexAttribArray(0);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-}
 
 float te::my_tiny_engine::get_time()
 {
@@ -333,5 +322,79 @@ void te::my_tiny_engine::render_color_triangle(const te::triangle& t,
 
 }
 
+void te::my_tiny_engine::render_with_vbo(const te::triangle& t1,
+                         const te::color& color)
+{
+    using namespace te::gl;
+    const int vertex_pos_size = 2;
+    const int vertex_color_size = 4;
+    const int vertex_pos_index = 0;
+    const int vertex_color_index = 1;
+    const int vertex_stride = sizeof(GLfloat) * (vertex_color_size + vertex_pos_size);
+
+    const GLint num_vertices = 3;
+    const GLint num_indices = 3;
+    GLfloat vtxBuf[3 * (vertex_pos_size + vertex_color_size)] =
+    {
+            t1.v[0].x, t1.v[0].y,
+            color.get_r(), color.get_g(), color.get_b(), color.get_a(),
+            t1.v[1].x, t1.v[1].y,
+            1.0f, 0.0f, 0.0f, 1.0f,
+            t1.v[2].x, t1.v[2].y,
+            0.0f, 0.0f, 1.0f, 1.0f
+    };
+
+    GLushort indices[3] = { 0, 1, 2 };
+    GLuint vboId[2] = {0, 0};
+
+    GLuint offset = 0;
+
+    if(vboId[0] == 0 && vboId[1] == 0)
+    {
+        te::gl::glGenBuffers(2, vboId);
+        te::gl::glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
+        te::gl::glBufferData(GL_ARRAY_BUFFER,
+                             num_vertices * vertex_stride,
+                             vtxBuf, GL_STATIC_DRAW);
+        te::gl::glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId[1]);
+        te::gl::glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLushort) * num_indices,
+                             indices, GL_STATIC_DRAW);
+    }
+
+    glBindBuffer(GL_ARRAY_BUFFER, vboId[0]);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboId[1]);
+
+    glEnableVertexAttribArray(vertex_pos_index);
+    glEnableVertexAttribArray(vertex_color_index);
+
+    glVertexAttribPointer(vertex_pos_index, vertex_pos_size,
+                          GL_FLOAT, GL_FALSE, vertex_stride,
+                          (const void*)offset);
+
+    offset += vertex_pos_size * sizeof(GLfloat);
+    glVertexAttribPointer(vertex_color_index, vertex_color_size,
+                          GL_FLOAT, GL_FALSE, vertex_stride,
+                          (const void*)offset);
+
+    glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, 0);
+
+    glDisableVertexAttribArray(vertex_pos_index);
+    glDisableVertexAttribArray(vertex_color_index);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
 
 
+void te::my_tiny_engine::render_with_vao(GLuint a_vao)
+{
+    te::gl::glBindVertexArray(a_vao);
+    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+    te::gl::glBindVertexArray(0);
+}
+
+GLuint te::my_tiny_engine::create_vao(const te::triangle& t1,
+                        const te::color& color)
+{
+    my_vao = std::make_unique<te::vao>(t1, color, 2);
+    return my_vao->get_vao_id();
+}

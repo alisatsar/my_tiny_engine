@@ -17,6 +17,9 @@ target_compile_features(shader PUBLIC cxx_std_17)
 add_library(texture SHARED texture.cpp)
 target_compile_features(texture PUBLIC cxx_std_17)
 
+add_library(vao SHARED vao.cpp)
+target_compile_features(vao PUBLIC cxx_std_17)
+
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 include_directories(${SDL2_INCLUDE_DIRS})
@@ -37,4 +40,4 @@ target_link_libraries(event
     ${SDL2_LIBRARIES}
     )
 
-target_link_libraries(game-03-3 engine event shader texture color)
+target_link_libraries(game-03-3 engine event shader texture color vao)
