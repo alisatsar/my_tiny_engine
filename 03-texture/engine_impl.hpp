@@ -38,8 +38,8 @@ public:
     void render_vertex_color(float vertices_color[]) final;
     void render_r_c() final;
     //texture
-    void create_texture(const char* file_path) final;
-    void render_texture();
+    void create_texture() final;
+    void render_texture(GLuint texture_id) final;
 
 
     void render_color_triangle(const triangle &t, const te::color &color) final;
@@ -50,12 +50,19 @@ public:
 
     GLuint create_vao(const te::triangle& t1,
                             const te::color& color) final;
+
+    void draw() final;
+
+    void create_simple_texture_2D() final;
+    void init() final;
+
 private:
     SDL_GLContext gl_context;
     SDL_Window* window;
     te::shader* shader;
-    unsigned int texture_id;
     std::unique_ptr<te::vao> my_vao;
+    GLuint textureId;
+
 };
 
 

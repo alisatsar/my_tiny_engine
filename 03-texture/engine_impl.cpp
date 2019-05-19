@@ -101,7 +101,7 @@ bool te::my_tiny_engine::create_window(const char* title, int32_t pos_x, int32_t
 void te::my_tiny_engine::swap_buffers()
 {
     SDL_GL_SwapWindow(window);
-    glClearColor(0.f, 1.0, 0.f, 0.0f);
+    glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
@@ -117,6 +117,7 @@ void te::my_tiny_engine::create_my_shader(const std::string& vertex_file_path,
 {
     shader->create_program_string(vertex_file_path.c_str(), fragment_file_path.c_str());
     shader->add_attribute("a_position");
+    shader->get_uniform_location("s_texture");
 
     shader->link_shaders();
     shader->use_program();
@@ -251,62 +252,34 @@ void te::my_tiny_engine::render_r_c()
 
 
 
-void te::my_tiny_engine::create_texture(const char* file_path)
+void te::my_tiny_engine::create_texture()
 {
-    using namespace te::gl;
-
-    float vertices[] = {
-        // positions          // colors           // texture coords
-         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
-         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
-        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
-        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left
-    };
-
-    glVertexAttribPointer(0,
-                          3,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          8 * sizeof(float),
-                          vertices);
-    glEnableVertexAttribArray(0);
-
-    glVertexAttribPointer(1,
-                          3,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          8 * sizeof(float),
-                          vertices + 3);
-    glEnableVertexAttribArray(1);
-
-    glVertexAttribPointer(2,
-                          2,
-                          GL_FLOAT,
-                          GL_FALSE,
-                          8 * sizeof(float),
-                          vertices + 6);
-    glEnableVertexAttribArray(2);
+    const int location =
+            te::gl::glGetUniformLocation(shader->get_shader_program(), "outTexture");
+        if (location == -1)
+        {
+            std::cerr << "can't get uniform location from shader\n";
+        }
+        unsigned int texture_unit = 0;
+        glActiveTexture(GL_TEXTURE0 + texture_unit);
 
 
-    using namespace te::gl;
-    glGenTextures(1, &texture_id);
-
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    texture tex(file_path);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex.get_width(),
-                 tex.get_heigth(), 0, GL_RGB, GL_UNSIGNED_BYTE, tex.get_data());
 
 }
 
-void te::my_tiny_engine::render_texture()
+void te::my_tiny_engine::render_texture(GLuint texture_id)
 {
+    const int location =
+            te::gl::glGetUniformLocation(shader->get_shader_program(), "outTexture");
+        if (location == -1)
+        {
+            std::cerr << "can't get uniform location from shader\n";
+            throw std::runtime_error("can't get uniform location");
+        }
+        unsigned int texture_unit = 0;
+    glActiveTexture(GL_TEXTURE0 + texture_unit);
     glBindTexture(GL_TEXTURE_2D, texture_id);
+    te::gl::glUniform1i(location, 0);
 }
 
 void te::my_tiny_engine::render_color_triangle(const te::triangle& t,
@@ -388,7 +361,7 @@ void te::my_tiny_engine::render_with_vbo(const te::triangle& t1,
 void te::my_tiny_engine::render_with_vao(GLuint a_vao)
 {
     te::gl::glBindVertexArray(a_vao);
-    glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_SHORT, 0);
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, 0);
     te::gl::glBindVertexArray(0);
 }
 
@@ -397,4 +370,82 @@ GLuint te::my_tiny_engine::create_vao(const te::triangle& t1,
 {
     my_vao = std::make_unique<te::vao>(t1, color, 2);
     return my_vao->get_vao_id();
+}
+
+void te::my_tiny_engine::draw()
+{
+    using namespace te::gl;
+
+    GLfloat vVertices[] = { -0.2f,  0.2f, 0.0f,  // Position 0
+                             0.0f,  0.0f,        // TexCoord 0
+                            -0.5f, -0.5f, 0.0f,  // Position 1
+                             0.0f,  1.0f,        // TexCoord 1
+                             0.5f, -0.5f, 0.0f,  // Position 2
+                             1.0f,  1.0f,        // TexCoord 2
+                             0.5f,  0.5f, 0.0f,  // Position 3
+                             1.0f,  0.0f         // TexCoord 3
+                          };
+    GLushort indices[] = { 0, 1, 2, 0, 2, 3 };
+
+
+    // Clear the color buffer
+    glClear ( GL_COLOR_BUFFER_BIT );
+
+    // Use the program object
+    glUseProgram ( shader->get_shader_program() );
+
+    // Load the vertex position
+    glVertexAttribPointer ( 0, 3, GL_FLOAT,
+                            GL_FALSE, 5 * sizeof ( GLfloat ), vVertices );
+    // Load the texture coordinate
+    glVertexAttribPointer ( 1, 2, GL_FLOAT,
+                            GL_FALSE, 5 * sizeof ( GLfloat ), &vVertices[3] );
+
+    glEnableVertexAttribArray ( 0 );
+    glEnableVertexAttribArray ( 1 );
+
+    // Bind the texture
+    glActiveTexture ( GL_TEXTURE0 );
+    glBindTexture ( GL_TEXTURE_2D, textureId );
+
+    GLint samplerLoc = glGetUniformLocation(shader->get_shader_program(), "s_texture" );
+    // Set the sampler texture unit to 0
+    glUniform1i ( samplerLoc, 0 );
+
+    glDrawElements ( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
+}
+
+void te::my_tiny_engine::create_simple_texture_2D()
+{
+    // 2x2 Image, 3 bytes per pixel (R, G, B)
+    GLubyte pixels[4 * 3] =
+    {
+       100,   0,   0, // Red
+         0, 200,   0, // Green
+         100,   100, 200, // Blue
+       255, 255,   0  // Yellow
+    };
+
+    // Use tightly packed data
+    glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
+
+    // Generate a texture object
+    glGenTextures ( 1, &textureId );
+
+    // Bind the texture object
+    glBindTexture ( GL_TEXTURE_2D, textureId );
+
+    // Load the texture
+    glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels );
+
+    // Set the filtering mode
+    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+}
+
+void te::my_tiny_engine::init()
+{
+    create_simple_texture_2D ();
+
+    glClearColor ( 1.0f, 1.0f, 1.0f, 0.0f );
 }

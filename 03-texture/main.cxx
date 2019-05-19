@@ -7,6 +7,9 @@
 #include "shader_path_constants.hpp"
 #include "common/types.h"
 
+#include "vao.h"
+#include "texture.h"
+
 int main()
 {
 	std::unique_ptr<te::engine, void(*)(te::engine*)> m(te::create_engine(), te::destroy_engine);
@@ -23,15 +26,15 @@ int main()
 		return EXIT_FAILURE;
 	}
 
-    m->create_my_shader(spc::triangle_3D_vbo_vert, spc::triangle_3D_vbo_frag);
-    //m->create_texture("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/container.jpg");
+    m->create_my_shader("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/shaders/texture.vert",
+                        "/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/shaders/texture.frag");
+    texture tex(std::string("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/zebra_seamless_texture.png"));
 
-    te::triangle t1(0.0f, 0.4f,
-                    0.6f, -0.4f,
-                    -0.4f, -0.2f);
-    te::color color(1.0f, 0.1f, 0.3f, 1.0f);
+    texture* tex2 = new texture();
 
-    GLuint vao_id = m->create_vao(t1, color);
+    //GLuint vao_id = m->create_vao(t1, color);
+
+    m->init();
 
     bool continue_loop = true;
 	while(continue_loop)
@@ -50,8 +53,9 @@ int main()
 				break;
 			}
 		}
-        m->render_with_vao(vao_id);
-		m->swap_buffers();
+        m->draw();
+        //m->a(tex2->get_tex_id());
+        m->swap_buffers();
 	};
 
 	m->unintialize();

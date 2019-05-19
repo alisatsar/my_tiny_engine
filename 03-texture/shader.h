@@ -23,6 +23,8 @@ public:
     //from learnopengl
     int get_uniform_location(const char* name);
 
+    GLuint get_shader_program() const { return shader_program; }
+
 private:
     GLuint create_shader(GLenum shaderType, const GLchar* shader_src);
 

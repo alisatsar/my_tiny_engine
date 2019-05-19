@@ -32,8 +32,8 @@ public:
 
         virtual void render_r_c() = 0;
 
-        virtual void create_texture(const char* file_path) = 0;
-        virtual void render_texture() = 0;
+        virtual void create_texture() = 0;
+        virtual void render_texture(GLuint texture_id) = 0;
         //color_vertex
         virtual void render_color_triangle(const triangle &t, const te::color &color) = 0;
         virtual void render_with_vbo(const te::triangle& t1, const te::color& color) = 0;
@@ -43,6 +43,10 @@ public:
 
 
         virtual void render_with_vao(GLuint a_vao) = 0;
+
+    virtual void draw() = 0;
+    virtual void create_simple_texture_2D() = 0;
+    virtual void init() = 0;
 
 };
 

@@ -28,22 +28,19 @@ float color::get_r() const
     std::uint32_t r = (rgba & 0x000000FF) >> 0;
     return r / 255.f;
 }
-
 float color::get_g() const
 {
-    std::uint32_t g = (rgba & 0x0000FF00) >> 0;
+    std::uint32_t g = (rgba & 0x0000FF00) >> 8;
     return g / 255.f;
 }
-
 float color::get_b() const
 {
-    std::uint32_t b = (rgba & 0x00FF0000) >> 0;
+    std::uint32_t b = (rgba & 0x00FF0000) >> 16;
     return b / 255.f;
 }
-
 float color::get_a() const
 {
-    std::uint32_t a = (rgba & 0xFF000000) >> 0;
+    std::uint32_t a = (rgba & 0xFF000000) >> 24;
     return a / 255.f;
 }
 
