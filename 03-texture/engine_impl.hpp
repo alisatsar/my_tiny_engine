@@ -37,10 +37,6 @@ public:
     void render_vertices(float vertices[]) final;   
     void render_vertex_color(float vertices_color[]) final;
     void render_r_c() final;
-    //texture
-    void create_texture() final;
-    void render_texture(GLuint texture_id) final;
-
 
     void render_color_triangle(const triangle &t, const te::color &color) final;
     void render_with_vbo(const te::triangle& t1,
@@ -51,10 +47,7 @@ public:
     GLuint create_vao(const te::triangle& t1,
                             const te::color& color) final;
 
-    void draw() final;
-
-    void create_simple_texture_2D() final;
-    void init() final;
+    void render_texture(GLuint tex_id) final;
 
 private:
     SDL_GLContext gl_context;

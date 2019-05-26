@@ -28,13 +28,9 @@ int main()
 
     m->create_my_shader("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/shaders/texture.vert",
                         "/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/shaders/texture.frag");
-    texture tex(std::string("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/zebra_seamless_texture.png"));
+    texture* tex = new texture("/home/alisatsar/my_tiny_engine/my_tiny_engine/03-texture/container.jpg");
 
     texture* tex2 = new texture();
-
-    //GLuint vao_id = m->create_vao(t1, color);
-
-    m->init();
 
     bool continue_loop = true;
 	while(continue_loop)
@@ -53,8 +49,7 @@ int main()
 				break;
 			}
 		}
-        m->draw();
-        //m->a(tex2->get_tex_id());
+        m->render_texture(tex->get_tex_id());
         m->swap_buffers();
 	};
 

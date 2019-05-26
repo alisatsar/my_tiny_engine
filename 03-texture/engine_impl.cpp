@@ -250,38 +250,6 @@ void te::my_tiny_engine::render_r_c()
     glDrawArrays(GL_TRIANGLES, 0, 3);
 }
 
-
-
-void te::my_tiny_engine::create_texture()
-{
-    const int location =
-            te::gl::glGetUniformLocation(shader->get_shader_program(), "outTexture");
-        if (location == -1)
-        {
-            std::cerr << "can't get uniform location from shader\n";
-        }
-        unsigned int texture_unit = 0;
-        glActiveTexture(GL_TEXTURE0 + texture_unit);
-
-
-
-}
-
-void te::my_tiny_engine::render_texture(GLuint texture_id)
-{
-    const int location =
-            te::gl::glGetUniformLocation(shader->get_shader_program(), "outTexture");
-        if (location == -1)
-        {
-            std::cerr << "can't get uniform location from shader\n";
-            throw std::runtime_error("can't get uniform location");
-        }
-        unsigned int texture_unit = 0;
-    glActiveTexture(GL_TEXTURE0 + texture_unit);
-    glBindTexture(GL_TEXTURE_2D, texture_id);
-    te::gl::glUniform1i(location, 0);
-}
-
 void te::my_tiny_engine::render_color_triangle(const te::triangle& t,
                                                  const te::color& color)
 {
@@ -372,11 +340,11 @@ GLuint te::my_tiny_engine::create_vao(const te::triangle& t1,
     return my_vao->get_vao_id();
 }
 
-void te::my_tiny_engine::draw()
+void te::my_tiny_engine::render_texture(GLuint tex_id)
 {
     using namespace te::gl;
 
-    GLfloat vVertices[] = { -0.2f,  0.2f, 0.0f,  // Position 0
+    GLfloat vVertices[] = { -0.5f,  0.5f, 0.0f,  // Position 0
                              0.0f,  0.0f,        // TexCoord 0
                             -0.5f, -0.5f, 0.0f,  // Position 1
                              0.0f,  1.0f,        // TexCoord 1
@@ -406,46 +374,11 @@ void te::my_tiny_engine::draw()
 
     // Bind the texture
     glActiveTexture ( GL_TEXTURE0 );
-    glBindTexture ( GL_TEXTURE_2D, textureId );
+    glBindTexture ( GL_TEXTURE_2D, tex_id );
 
     GLint samplerLoc = glGetUniformLocation(shader->get_shader_program(), "s_texture" );
     // Set the sampler texture unit to 0
     glUniform1i ( samplerLoc, 0 );
 
     glDrawElements ( GL_TRIANGLES, 6, GL_UNSIGNED_SHORT, indices );
-}
-
-void te::my_tiny_engine::create_simple_texture_2D()
-{
-    // 2x2 Image, 3 bytes per pixel (R, G, B)
-    GLubyte pixels[4 * 3] =
-    {
-       100,   0,   0, // Red
-         0, 200,   0, // Green
-         100,   100, 200, // Blue
-       255, 255,   0  // Yellow
-    };
-
-    // Use tightly packed data
-    glPixelStorei ( GL_UNPACK_ALIGNMENT, 1 );
-
-    // Generate a texture object
-    glGenTextures ( 1, &textureId );
-
-    // Bind the texture object
-    glBindTexture ( GL_TEXTURE_2D, textureId );
-
-    // Load the texture
-    glTexImage2D ( GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, pixels );
-
-    // Set the filtering mode
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
-    glTexParameteri ( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
-}
-
-void te::my_tiny_engine::init()
-{
-    create_simple_texture_2D ();
-
-    glClearColor ( 1.0f, 1.0f, 1.0f, 0.0f );
 }
